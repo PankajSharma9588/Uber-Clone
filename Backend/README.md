@@ -15,11 +15,11 @@ The request body should be a JSON object with the following structure:
 ```json
 {
   "fullname": {
-    "firstname": "string",
+    "firstname": "string", // Must be at least 3 characters long
     "lastname": "string"
   },
-  "email": "string",
-  "password": "string"
+  "email": "string", // Must be a valid email address
+  "password": "string" // Must be at least 6 characters long
 }
 ```
 
@@ -104,8 +104,8 @@ The request body should be a JSON object with the following structure:
 
 ```json
 {
-  "email": "string",
-  "password": "string"
+  "email": "string", // Must be a valid email address
+  "password": "string" // Must be at least 6 characters long
 }
 ```
 
@@ -289,16 +289,16 @@ The request body should be a JSON object with the following structure:
 ```json
 {
   "fullname": {
-    "firstname": "string",
+    "firstname": "string", // Must be at least 3 characters long
     "lastname": "string"
   },
-  "email": "string",
-  "password": "string",
+  "email": "string", // Must be a valid email address
+  "password": "string", // Must be at least 6 characters long
   "vechicle": {
-    "color": "string",
-    "plateNumber": "string",
-    "capacity": "number",
-    "vechicleType": "string"
+    "color": "string", // Must not be empty
+    "plateNumber": "string", // Must not be empty
+    "capacity": "number", // Must be a number
+    "vechicleType": "string" // Must not be empty
   }
 }
 ```
@@ -340,6 +340,7 @@ The request body should be a JSON object with the following structure:
 - **Body**:
   ```json
   {
+    "token": "jwt_token",
     "captain": {
       "_id": "captain_id",
       "fullname": {
@@ -370,6 +371,202 @@ The request body should be a JSON object with the following structure:
         "location": "body"
       }
     ]
+  }
+  ```
+
+### Server Error
+
+- **Status Code**: `500 Internal Server Error`
+- **Body**:
+  ```json
+  {
+    "error": "Internal Server Error"
+  }
+  ```
+
+# Captain Login Endpoint
+
+## Endpoint
+
+`POST /captain/login`
+
+## Description
+
+This endpoint logs in an existing captain by accepting their email and password. It validates the input data and returns a JWT token upon successful authentication.
+
+## Request Body
+
+The request body should be a JSON object with the following structure:
+
+```json
+{
+  "email": "string", // Must be a valid email address
+  "password": "string" // Must be at least 6 characters long
+}
+```
+
+### Example
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+```
+
+## Validation Rules
+
+- `email`: Must be a valid email address.
+- `password`: Must be at least 6 characters long.
+
+## Responses
+
+### Success
+
+- **Status Code**: `200 OK`
+- **Body**:
+  ```json
+  {
+    "token": "jwt_token",
+    "captain": {
+      "_id": "captain_id",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "vechicle": {
+        "color": "Black",
+        "plateNumber": "ABC-123",
+        "capacity": 4,
+        "vechicleType": "Sedan"
+      }
+    }
+  }
+  ```
+
+### Validation Error
+
+- **Status Code**: `400 Bad Request`
+- **Body**:
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Error message",
+        "param": "parameter_name",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+### Authentication Error
+
+- **Status Code**: `401 Unauthorized`
+- **Body**:
+  ```json
+  {
+    "message": "Invalid email or password"
+  }
+  ```
+
+### Server Error
+
+- **Status Code**: `500 Internal Server Error`
+- **Body**:
+  ```json
+  {
+    "error": "Internal Server Error"
+  }
+  ```
+
+# Captain Profile Endpoint
+
+## Endpoint
+
+`GET /captain/profile`
+
+## Description
+
+This endpoint retrieves the profile information of the currently authenticated captain. It requires a valid JWT token to be included in the request.
+
+## Authentication
+
+Requires a valid JWT token in one of:
+
+- Cookie named 'token'
+- Authorization header: `Bearer <token>`
+
+## Responses
+
+### Success
+
+- **Status Code**: `200 OK`
+- **Body**:
+  ```json
+  {
+    "_id": "captain_id",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vechicle": {
+      "color": "Black",
+      "plateNumber": "ABC-123",
+      "capacity": 4,
+      "vechicleType": "Sedan"
+    }
+  }
+  ```
+
+### Authentication Error
+
+- **Status Code**: `401 Unauthorized`
+- **Body**:
+  ```json
+  {
+    "message": "Authentication required"
+  }
+  ```
+
+# Captain Logout Endpoint
+
+## Endpoint
+
+`GET /captain/logout`
+
+## Description
+
+This endpoint logs out the current captain by clearing their authentication token cookie and blacklisting the token to prevent future use.
+
+## Authentication
+
+Requires a valid JWT token in one of:
+
+- Cookie named 'token'
+- Authorization header: `Bearer <token>`
+
+## Responses
+
+### Success
+
+- **Status Code**: `200 OK`
+- **Body**:
+  ```json
+  {
+    "message": "Logged out successfully"
+  }
+  ```
+
+### Authentication Error
+
+- **Status Code**: `401 Unauthorized`
+- **Body**:
+  ```json
+  {
+    "message": "Authentication required"
   }
   ```
 
