@@ -271,3 +271,114 @@ Requires a valid JWT token in one of:
     "error": "Internal Server Error"
   }
   ```
+
+# Captain Registration Endpoint
+
+## Endpoint
+
+`POST /captain/register`
+
+## Description
+
+This endpoint registers a new captain (driver) by accepting their personal information and vehicle details. It validates the input data and returns a response upon successful registration.
+
+## Request Body
+
+The request body should be a JSON object with the following structure:
+
+```json
+{
+  "fullname": {
+    "firstname": "string",
+    "lastname": "string"
+  },
+  "email": "string",
+  "password": "string",
+  "vechicle": {
+    "color": "string",
+    "plateNumber": "string",
+    "capacity": "number",
+    "vechicleType": "string"
+  }
+}
+```
+
+### Example
+
+```json
+{
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com",
+  "password": "password123",
+  "vechicle": {
+    "color": "Black",
+    "plateNumber": "ABC-123",
+    "capacity": 4,
+    "vechicleType": "Sedan"
+  }
+}
+```
+
+## Validation Rules
+
+- `email`: Must be a valid email address
+- `fullname.firstname`: Must be at least 3 characters long
+- `password`: Must be at least 6 characters long
+- `vechicle.color`: Must not be empty
+- `vechicle.plateNumber`: Must not be empty
+- `vechicle.capacity`: Must be a number
+- `vechicle.vechicleType`: Must not be empty
+
+## Responses
+
+### Success
+
+- **Status Code**: `201 Created`
+- **Body**:
+  ```json
+  {
+    "captain": {
+      "_id": "captain_id",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "vechicle": {
+        "color": "Black",
+        "plateNumber": "ABC-123",
+        "capacity": 4,
+        "vechicleType": "Sedan"
+      }
+    }
+  }
+  ```
+
+### Validation Error
+
+- **Status Code**: `400 Bad Request`
+- **Body**:
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Error message",
+        "param": "parameter_name",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+### Server Error
+
+- **Status Code**: `500 Internal Server Error`
+- **Body**:
+  ```json
+  {
+    "error": "Internal Server Error"
+  }
+  ```
